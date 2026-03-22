@@ -1,0 +1,31 @@
+import json
+
+def lambda_handler(event, context):
+    try:
+        body = json.loads(event.get('body', '{}'))
+        text = body.get('resume_text', '').lower()
+
+        skills = [
+            "java", "python", "aws", "sql",
+            "iot", "vlsi", "embedded", "c++", "verilog"
+        ]
+
+        found = [s for s in skills if s in text]
+        missing = [s for s in skills if s not in text]
+
+        score = int((len(found) / len(skills)) * 100)
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'score': score,
+                'skills_found': found,
+                'missing_skills': missing
+            })
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'error': str(e)})
+        }
